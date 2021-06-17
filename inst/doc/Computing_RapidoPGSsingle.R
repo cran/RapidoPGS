@@ -1,10 +1,4 @@
 ## ----eval=FALSE---------------------------------------------------------------
-#  if (!requireNamespace("BiocManager", quietly = TRUE))
-#      install.packages("BiocManager")
-#  
-#  BiocManager::install("GenomicRanges")
-
-## ----eval=FALSE---------------------------------------------------------------
 #  if (!requireNamespace("remotes", quietly = TRUE))
 #      install.packages("remotes")
 #  remotes::install_github("GRealesM/RapidoPGS")
@@ -28,20 +22,20 @@ setnames(ds, old = c("hm_rsid", "hm_chrom", "hm_pos", "hm_other_allele", "hm_eff
 ds <- ds[CHR != "X",]
 
 ## -----------------------------------------------------------------------------
-full_PGS <- computePGS(ds, N0= 119078 ,N1=137045, build = "hg38")
+full_PGS <- rapidopgs_single(ds, trait = "cc", build = "hg38")
 
 ## -----------------------------------------------------------------------------
 head(full_PGS)
 
 ## -----------------------------------------------------------------------------
-PGS_1e4 <- computePGS(ds, N0= 119078 ,N1=137045, build = "hg38", filt_threshold = 1e-4)
+PGS_1e4 <- rapidopgs_single(ds, trait ="cc", build = "hg38", filt_threshold = 1e-4)
 head(PGS_1e4)
 
 ## -----------------------------------------------------------------------------
-PGS_1e4_norecalc <- computePGS(ds, N0= 119078 ,N1=137045, build = "hg38", filt_threshold = 1e-4, recalc = FALSE)
+PGS_1e4_norecalc <- rapidopgs_single(ds, trait ="cc", build = "hg38", filt_threshold = 1e-4, recalc = FALSE)
 head(PGS_1e4_norecalc)
 
 ## -----------------------------------------------------------------------------
-PGS_top10 <- computePGS(ds, N0= 119078 ,N1=137045, build = "hg38", filt_threshold = 10)
+PGS_top10 <- rapidopgs_single(ds, trait ="cc", build = "hg38", filt_threshold = 10)
 head(PGS_top10)
 
