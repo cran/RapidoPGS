@@ -533,9 +533,11 @@ rapidopgs_single <- function(data,
 ##'}
 
 rapidopgs_multi <- function(data, trait=c("cc","quant"), reference=NULL, LDmatrices=NULL, N=NULL, ancestry="EUR", pi_i = 1e-04, ncores=1, alpha.block=1e-4, alpha.snp=0.01, sd.prior=NULL){
-  
-  ds <- copy(data) # avoid modifying input data.table
+ 
   # Sanity checks
+  if(!"data.table" %in% class(data))
+  	  data <- as.data.table(data)
+  
   if(!trait %in% c("cc", "quant")) stop("Please, specify your study type, choose case-control ('cc') or quantitative ('quant').")
   if(length(trait) != 1) stop("Please select only one study type")
   if(trait == "quant" && is.null(N)) stop("N (sample size) is required for quantitative traits, please provide them, either as an integer or as column name containing it.")
@@ -571,6 +573,7 @@ rapidopgs_multi <- function(data, trait=c("cc","quant"), reference=NULL, LDmatri
     }
   }
  
+  ds <- copy(data) # avoid modifying input data.table
   ds[,SNPID:=paste(CHR,BP, sep = ":")]
   ds  <- na.omit(ds, cols=c("CHR","BP", "BETA", "SE", "P"))
   
@@ -692,9 +695,10 @@ rapidopgs_multi <- function(data, trait=c("cc","quant"), reference=NULL, LDmatri
           prior_var = sd.prior^2
         }
         
-        ppi_susie <- suppressMessages(runsusie(susie.ds,nref=length(euridx),p=pi_i, prior_variance=prior_var, estimate_prior_variance=prior_est, check_R=FALSE))
-        ppi_susie <- ppi_susie$pip[1:(length(ppi_susie$pip)-1)]
-        snp.block$ppi_susie <- ppi_susie
+        ppi_susie <- suppressMessages(runsusie(susie.ds,p=pi_i, prior_variance=prior_var, estimate_prior_variance=prior_est))
+        snp.block$ppi_susie <- ppi_susie$pip
+        
+        # Append to results
         results <- rbind(results, snp.block)
         
         # Progress bar
@@ -778,9 +782,8 @@ rapidopgs_multi <- function(data, trait=c("cc","quant"), reference=NULL, LDmatri
           prior_var  <-  sd.prior^2
         }
         
-        ppi_susie <- suppressMessages(runsusie(susie.ds,p=pi_i, prior_variance=prior_var, estimate_prior_variance=prior_est, check_R=FALSE))
-        ppi_susie <- ppi_susie$pip[1:(length(ppi_susie$pip)-1)]
-        snp.block$ppi_susie <- ppi_susie
+        ppi_susie <- suppressMessages(runsusie(susie.ds,p=pi_i, prior_variance=prior_var, estimate_prior_variance=prior_est))
+        snp.block$ppi_susie <- ppi_susie$pip
         
         # Append to results
         results <- rbind(results, snp.block)
@@ -841,17 +844,17 @@ create_1000G <- function(directory = "ref-data", remove.related=TRUE, qc.maf = 0
   message("These are (very) big files, so they'll take a while to download. Time for a cuppa.")
   for(chr in c(1:max.chr)){
     message("Downloading chromosome ",chr,"...")
-    download.file(paste0("ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr",chr,".phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz"),
+    download.file(paste0("ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr",chr,".phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz"),
                   destfile = paste0(directory,"/chr",chr,".vcf.gz"), mode = "wb")
     message("Done!")
   }
   if(!autosomes.only){
   # X and Y chromosomes have a bit different link
   message("Downloading chromosome X. Note that current RapidoPGS-multi version uses autosomes only.")
-  download.file("ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chrX.phase3_shapeit2_mvncall_integrated_v1b.20130502.genotypes.vcf.gz", destfile = paste0(directory,"/chr23.vcf.gz"), mode = "wb")
+  download.file("ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chrX.phase3_shapeit2_mvncall_integrated_v1c.20130502.genotypes.vcf.gz", destfile = paste0(directory,"/chr23.vcf.gz"), mode = "wb")
   message("Done!")
   message("Downloading chromosome Y. Note that current RapidoPGS-multi version uses autosomes only.")
-  download.file("ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chrY.phase3_integrated_v2a.20130502.genotypes.vcf.gz", destfile = paste0(directory,"/chr24.vcf.gz"), mode = "wb")
+  download.file("ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chrY.phase3_integrated_v2b.20130502.genotypes.vcf.gz", destfile = paste0(directory,"/chr24.vcf.gz"), mode = "wb")
   message("Done!")
   max.chr=24
   }

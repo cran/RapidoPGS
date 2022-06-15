@@ -1,3 +1,6 @@
+## ----eval = FALSE-------------------------------------------------------------
+#  install.packages("RapidoPGS")
+
 ## ----eval=FALSE---------------------------------------------------------------
 #  if (!requireNamespace("remotes", quietly = TRUE))
 #      install.packages("remotes")

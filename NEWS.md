@@ -1,4 +1,33 @@
-# RapidoPGS 2.1.0
+# RapidoPGS 2.2.0
+
+RapidoPGS 2.2.0.9000
+2022-06-15
+- We updated hg38 LD blocks from liftovered Berisa & Pickrell to recomputed MacDonald et al. 2022 (https://github.com/jmacdon/LDblocks_GRCh38, https://www.biorxiv.org/content/10.1101/2022.03.04.483057v1), which offer a more accurate representation of LD structure in hg38.
+
+RapidoPGS 2.1.0.9009
+2021-09-28
+- Fixed a bug derived from automatically supplying "nref" to SuSIE in `rapidopgs_multi()`, which is no longer required.
+
+RapidoPGS 2.1.0.9008
+2021-08-13
+- Fixed a change in the hard-coded url to download 1000G panel from the official server to meet a change in versioning (v5a -> v5b) at the source.
+
+RapidoPGS 2.1.0.9007
+2021-07-13
+- Fixed a bug caused by changes in behavior of `runsusie()` in `rapidopgs_multi()` that used to supply an extra zero element which is not supplied anymore.
+
+RapidoPGS 2.1.0.9006 
+2021-07-12
+- Fixed an error popping up when `rapidopgs_multi()` is not supplied input of data.table class.
+- Removed a deprecated argument in `runsusie()` internal function that was preventing `rapidopgs_multi()` to run properly.
+
+RapidoPGS 2.1.0.9005 
+2021-07-09
+- Fixed a change in the hard-coded url to download 1000G panel from the official server to meet a change in versioning for sex chromosomes at the source.
+
+RapidoPGS 2.1.0.9004
+2021-06-17
+- Tiny updates in README and vignettes concerning dependencies and versions.
 
 RapidoPGS 2.1.0.9003
 2021-06-09
