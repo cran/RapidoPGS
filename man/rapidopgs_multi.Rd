@@ -7,38 +7,35 @@
 \usage{
 rapidopgs_multi(
   data,
-  trait = c("cc", "quant"),
   reference = NULL,
   LDmatrices = NULL,
   N = NULL,
-  ancestry = "EUR",
-  pi_i = 1e-04,
+  build = c("hg19", "hg38"),
+  trait = c("cc", "quant"),
   ncores = 1,
   alpha.block = 1e-04,
   alpha.snp = 0.01,
-  sd.prior = NULL
+  sd.prior = NULL,
+  ancestry = "EUR",
+  LDblocks = NULL
 )
 }
 \arguments{
 \item{data}{a data.table containing GWAS summary statistic dataset
 with all required information.}
 
-\item{trait}{a string indicating if trait is a case-control ("cc") or quantitative ("quant").}
-
 \item{reference}{a string representing the path to the directory containing
-the reference panel (eg. "../ref-data/").}
+the reference panel (eg. "../ref-data").}
 
 \item{LDmatrices}{a string representing the path to the directory containing
 the pre-computed LD matrices.}
 
 \item{N}{a numeric indicating the number of individuals used to generate input
-GWAS dataset, or a string indicating the column name containing per-SNP sample size.
-Required for quantitative traits only.}
+GWAS dataset, or a string indicating the column name containing per-SNP sample size.}
 
-\item{ancestry}{a string indicating the ancestral population (DEFAULT: "EUR")}
+\item{build}{a string indicating the genome build. 'hg19' and 'hg38' are supported. Note that your LD matrices or reference panel should match the build.}
 
-\item{pi_i}{a scalar representing the prior probability (DEFAULT:
-\eqn{1 \times 10^{-4}}).If you wish SuSiE to estimate this internally, set p=NULL.}
+\item{trait}{a string indicating if trait is a case-control ("cc") or quantitative ("quant").}
 
 \item{ncores}{a numeric specifying the number of cores (CPUs) to be used.
 If using pre-computed LD matrices, one core is enough for best performance.}
@@ -53,6 +50,12 @@ SNPs with P above \code{alpha.snp} will be removed. Default: 0.01.}
 follows a centred normal distribution with standard deviation
 sd.prior.
 If NULL (default) it will be automatically estimated (recommended).}
+
+\item{ancestry}{a string indicating the ancestral population (DEFAULT: "EUR", European).
+If using an alternative population, bear in mind that your LD matrices or reference must be from the same population.
+You'll also need to provide matching LD.blocks via the LDblocks argument.}
+
+\item{LDblocks}{a string indicating the path to an alternative LD block file in .RData format. Only required for non-European PGS.}
 }
 \value{
 a data.table containing the sumstats dataset with
@@ -104,17 +107,16 @@ These matrices were computed using for 1,054,330 HapMap3 variants based on
 }
 \examples{
 \dontrun{
-sumstats <- data.table(
+ss <- data.table(
 		CHR=c("4","20","14","2","4","6","6","21","13"), 
 		BP=c(1479959, 13000913, 29107209, 203573414, 57331393, 11003529, 149256398, 
 				25630085, 79166661), 
 		REF=c("C","C","C","T","G","C","C","G","T"), 
 		ALT=c("A","T","T","A","A","A","T","A","C"), 
-		ALT_FREQ=c(0.2611,0.4482,0.0321,0.0538,0.574,0.0174,0.0084,0.0304,0.7528),
 		BETA=c(0.012,0.0079,0.0224,0.0033,0.0153,0.058,0.0742,0.001,-0.0131),
 		SE=c(0.0099,0.0066,0.0203,0.0171,0.0063,0.0255,0.043,0.0188,0.0074),
 		P=c(0.2237,0.2316,0.2682,0.8477,0.01473,0.02298,0.08472,0.9573,0.07535))
-PGS  <- rapidopgs_multi(sumstats, trait="cc", reference = "ref-data/", ncores=2)
+PGS <- rapidopgs_multi(ss, reference = "ref-data/", N = 20000, build = "hg19", trait="cc", ncores=5)
 }
 }
 \author{

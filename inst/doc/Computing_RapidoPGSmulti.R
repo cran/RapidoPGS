@@ -23,8 +23,8 @@ library(RapidoPGS)
 #  ds <- michailidou19
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  model.LDmat <- rapidopgs_multi(ds ,trait="cc", LDmatrices = "ukbb")
+#  model.LDmat <- rapidopgs_multi(ds, LDmatrices = "ukbb", N = 256123, build = "hg19", trait="cc")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  model.refpanel <- rapidopgs_multi(ds, trait="cc", reference = "ref-data", ncores=8)
+#  model.refpanel <- rapidopgs_multi(ds, reference = "ref-data",  N = 256123, build = "hg19", trait="cc", ncores=8)
 

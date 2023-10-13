@@ -10,19 +10,26 @@
 library(RapidoPGS)
 
 ## ----eval =FALSE--------------------------------------------------------------
-#  ds <- gwascat.download(29059683, hm_only = FALSE)
+#  ds <- gwascat.download(29059683)
+#  
+#  # Select the harmonised hg38 file
+#  # This is equivalent to:
+#  # ds <- fread("ftp://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST004001-GCST005000/GCST004988/harmonised/29059683-GCST004988-EFO_0000305.h.tsv.gz")
+#  
+#  # Then apply some reformatting
+#  setnames(ds, old = c("hm_rsid","hm_chrom","hm_pos", "hm_other_allele", "hm_effect_allele", "hm_effect_allele_frequency", "hm_beta", "standard_error", "p_value"), new = c("SNPID","CHR", "BP", "REF","ALT","ALT_FREQ", "BETA", "SE", "P"))
+#  ds <- ds[,.(SNPID, CHR, BP, REF, ALT, ALT_FREQ, BETA, SE, P)]
+#  ds <- ds[CHR !="X"]
+#  ds$CHR <- as.numeric(ds$CHR)
+#  ds <- ds[order(CHR, BP)]
+#  ds <- na.omit(ds, cols = c("BETA", "ALT_FREQ"))
+#  
 
 ## -----------------------------------------------------------------------------
-ds <- michailidou
+ds <- michailidou38
 
 ## -----------------------------------------------------------------------------
 summary(ds)
-
-## -----------------------------------------------------------------------------
-setnames(ds, old = c("hm_rsid", "hm_chrom", "hm_pos", "hm_other_allele", "hm_effect_allele", "hm_beta", "hm_effect_allele_frequency", "standard_error", "p_value"), new=c("SNPID","CHR", "BP","REF", "ALT", "BETA", "ALT_FREQ", "SE", "P"))
-
-## -----------------------------------------------------------------------------
-ds <- ds[CHR != "X",]
 
 ## -----------------------------------------------------------------------------
 full_PGS <- rapidopgs_single(ds, trait = "cc", build = "hg38")

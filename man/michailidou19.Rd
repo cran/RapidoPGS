@@ -20,13 +20,13 @@ SNPID, CHR, BP, REF, ALT, ALT_FREQ, BETA, SE, P
 }
 }
 \source{
-\url{ftp://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/MichailidouK_29059683_GCST004988/harmonised/29059683-GCST004988-EFO_0000305.h.tsv.gz}
+\url{http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST004001-GCST005000/GCST004988/harmonised/29059683-GCST004988-EFO_0000305-build37.f.tsv.gz}
 }
 \usage{
 michailidou19
 }
 \description{
 A data.table containing a subset of \href{https://www.nature.com/articles/nature24284/}{Michailidou et al., 2017} breast cancer summary statistic dataset, in hg19 build.
-This dataset is freely available in GWAS catalog (see link below). I used "chromosome", "base_pair_location columns", removed unnecessary and all-missing columns, and took a random sample of 100,000 SNPs without replacement.
+This dataset is freely available in GWAS catalog (see link below). We used "chromosome", "base_pair_location columns", removed unnecessary and all-missing columns, and took a random sample of 100,000 SNPs without replacement.
 }
 \keyword{datasets}
