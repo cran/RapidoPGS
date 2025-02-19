@@ -12,32 +12,45 @@
 
 <meta name="author" content="Guillermo Reales" />
 
-<meta name="date" content="2023-10-13" />
+<meta name="date" content="2025-02-19" />
 
 <title>Computing a PGS using RápidoPGS-multi</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -53,55 +66,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -135,7 +147,187 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -149,78 +341,162 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">Computing a PGS using RápidoPGS-multi</h1>
 <h4 class="author">Guillermo Reales</h4>
-<h4 class="date">2023-10-13</h4>
+<h4 class="date">2025-02-19</h4>
 
 
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>RápidoPGS is a tool to quickly compute polygenic scores (PGS) from GWAS summary statistics datasets from either case-control (eg. asthma) or quantitative traits (eg. height and BMI).</p>
-<p>Input GWAS summary statistics datasets should have a minimum set of columns, with these names, but in any order:</p>
+<p>RápidoPGS is a tool to quickly compute polygenic scores (PGS) from
+GWAS summary statistics datasets from either case-control (eg. asthma)
+or quantitative traits (eg. height and BMI).</p>
+<p>Input GWAS summary statistics datasets should have a minimum set of
+columns, with these names, but in any order:</p>
 <ul>
 <li><strong>CHR</strong>: Chromosome</li>
-<li><strong>BP</strong>: Base position (in GRCh37/hg19 or GRCh38/hg38). If using hg38, use build = “hg38” in parameters.</li>
-<li><strong>SNPID</strong>: rsids, or SNP identifiers. If not available, they can be anything (eg. CHR_BP).</li>
+<li><strong>BP</strong>: Base position (in GRCh37/hg19 or GRCh38/hg38).
+If using hg38, use build = “hg38” in parameters.</li>
+<li><strong>SNPID</strong>: rsids, or SNP identifiers. If not available,
+they can be anything (eg. CHR_BP).</li>
 <li><strong>REF</strong>: Reference, or non-effect allele</li>
-<li><strong>ALT</strong>: Alternative, or effect allele, the one  refers to</li>
-<li><strong>BETA</strong>: <span class="math inline">\(\beta\)</span> (or log(OR)), or effect sizes.</li>
+<li><strong>ALT</strong>: Alternative, or effect allele, the one refers
+to</li>
+<li><strong>BETA</strong>: <span class="math inline">\(\beta\)</span>
+(or log(OR)), or effect sizes.</li>
 <li><strong>SE</strong>: Standard error of <span class="math inline">\(\beta\)</span></li>
 <li><strong>P</strong>: P-values for the association test</li>
 </ul>
-<p>Also, if doing a PGS on a quantitative trait GWAS dataset, your file must include this:</p>
+<p>Also, if doing a PGS on a quantitative trait GWAS dataset, your file
+must include this:</p>
 <ul>
-<li><strong>ALT_FREQ</strong>: Minor/ALT allele frequency in the tested population, or in a close population from a reference panel.</li>
+<li><strong>ALT_FREQ</strong>: Minor/ALT allele frequency in the tested
+population, or in a close population from a reference panel.</li>
 </ul>
 </div>
 <div id="installation-of-rápidopgs" class="section level1">
 <h1>Installation of RápidoPGS</h1>
-<p>Current RápidoPGS version (v2.2.0) is available on CRAN, so we can install it using the following code</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;RapidoPGS&quot;</span>)</span></code></pre></div>
-<p>Alternatively, you can download the development version from Github (Note: If you don’t have <code>remotes</code> installed, please install it first:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;remotes&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;GRealesM/RapidoPGS&quot;</span>)</span></code></pre></div>
+<p>Current RápidoPGS version (v2.2.0) is available on CRAN, so we can
+install it using the following code</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;RapidoPGS&quot;</span>)</span></code></pre></div>
+<p>Alternatively, you can download the development version from Github
+(Note: If you don’t have <code>remotes</code> installed, please install
+it first:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;remotes&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;GRealesM/RapidoPGS&quot;</span>)</span></code></pre></div>
 </div>
 <div id="setup" class="section level1">
 <h1>Setup</h1>
-<p>Once installed, let’s load it. This will automatically load all required dependencies.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RapidoPGS)</span></code></pre></div>
+<p>Once installed, let’s load it. This will automatically load all
+required dependencies.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(RapidoPGS)</span></code></pre></div>
 </div>
 <div id="preparing-reference-panel" class="section level1">
 <h1>Preparing reference panel</h1>
-<p>RápidoPGS-multi is slightly less simple to run than RápidoPGS-single, as it requires LD matrices to inform on the relationships between SNPs in the data. To that end we have two options: <strong>(1) Use a reference panel</strong>, and <strong>(2) Use pre-computed LD matrices</strong>. In this section we will deal with the first option.</p>
-<p>A reference panel is simply genomic data obtained from a representative sample of a larger population. For example, the UK Biobank cohort comprises ~500,000 individuals between 40 and 69 years old from the United Kingdom and can be used as a reference for the UK (or more roughly, European) population. Unfortunately, UK Biobank data is only available to researches upon application, so in this example we will use the fully public 1000 Genomes Project Phase III as a reference panel.</p>
-<p>The 1000 Genomes Project Phase III comprises genomic data from 2504 individuals from multiple world populations, and although its sample size is relatively small compared to UK Biobank, it has the nice feature of being open for everyone to use it.</p>
-<p>Prior to running RápidoPGS-multi, we need to set up our reference panel. To easen things, you can use the <code>create_1000G</code>, which will do everything for you. Bear in mind that this will take ~60GB of disk memory and a while, depending of your internet connection, so be warned! You can tweak the QC parameters as you see fit. See function documentation for more information.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">create_1000G</span>(<span class="at">directory =</span> <span class="st">&quot;ref-data&quot;</span>, <span class="at">remove.related=</span><span class="cn">TRUE</span>, <span class="at">qc.maf =</span> <span class="fl">0.01</span>, <span class="at">qc.hwe=</span><span class="fl">1e-10</span>, <span class="at">qc.geno=</span><span class="dv">0</span>, <span class="at">autosomes.only=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p>RápidoPGS-multi is slightly less simple to run than RápidoPGS-single,
+as it requires LD matrices to inform on the relationships between SNPs
+in the data. To that end we have two options: <strong>(1) Use a
+reference panel</strong>, and <strong>(2) Use pre-computed LD
+matrices</strong>. In this section we will deal with the first
+option.</p>
+<p>A reference panel is simply genomic data obtained from a
+representative sample of a larger population. For example, the UK
+Biobank cohort comprises ~500,000 individuals between 40 and 69 years
+old from the United Kingdom and can be used as a reference for the UK
+(or more roughly, European) population. Unfortunately, UK Biobank data
+is only available to researches upon application, so in this example we
+will use the fully public 1000 Genomes Project Phase III as a reference
+panel.</p>
+<p>The 1000 Genomes Project Phase III comprises genomic data from 2504
+individuals from multiple world populations, and although its sample
+size is relatively small compared to UK Biobank, it has the nice feature
+of being open for everyone to use it.</p>
+<p>Prior to running RápidoPGS-multi, we need to set up our reference
+panel. To easen things, you can use the <code>create_1000G</code>, which
+will do everything for you. Bear in mind that this will take ~60GB of
+disk memory and a while, depending of your internet connection, so be
+warned! You can tweak the QC parameters as you see fit. See function
+documentation for more information.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">create_1000G</span>(<span class="at">directory =</span> <span class="st">&quot;ref-data&quot;</span>, <span class="at">remove.related=</span><span class="cn">TRUE</span>, <span class="at">qc.maf =</span> <span class="fl">0.01</span>, <span class="at">qc.hwe=</span><span class="fl">1e-10</span>, <span class="at">qc.geno=</span><span class="dv">0</span>, <span class="at">autosomes.only=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <p>And that should be it!</p>
 </div>
 <div id="preparing-ld-matrices-uk-biobank-case" class="section level1">
 <h1>Preparing LD matrices (UK Biobank case)</h1>
-<p>Alternatively, we can use pre-computed LD matrices (from a larger panel, for example). In our paper, we use pre-computed LD matrices from the UK Biobank panel, made publicly available by LDpred2 authors <a href="https://figshare.com/articles/dataset/European_LD_reference/13034123">here</a>.</p>
-<p>These matrices comprise ~1 million HapMap3 variants, and were computed on 362,320 UK Biobank individuals. We can download and set them up using the following code:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;ukbb&quot;</span>)  <span class="co"># Or whatever you like</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;https://ndownloader.figshare.com/articles/13034123/versions/3&quot;</span>, <span class="at">destfile=</span><span class="st">&quot;ukbb/LD_ukbb.zip&quot;</span>, <span class="at">mode=</span><span class="st">&quot;wb&quot;</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="at">zipfile=</span><span class="st">&quot;ukbb/LD_ukbb.zip&quot;</span>, <span class="at">exdir=</span><span class="st">&quot;ukbb/&quot;</span>) </span></code></pre></div>
-<p><strong>Note:</strong> If you get some error or warning when unzipping from the R session (eg. “Zip file is corrupt” warning), try to unzip normally, using either a terminal or right-clicking on the file and extracting it.</p>
-<p>With this, your LD matrix directory should be ready. We prepared <code>rapidopgs_multi()</code> function to work out of the box with these LD matrices, which are (1) Separated by chromosomes, (2) class “dsCMatrix”, (3) contained in <code>.rds</code> files, and (4) accompanied by a manifest, <code>map.rds</code>, containing information on the variants in the LD matrices (HapMap3 variants in this case).</p>
-<p>Note that these matrices are computed using a European population, so they won’t be the best fit for generating a PGS for a non-European population. If that is your case, you can use the reference panel option, as it contains many populations from most ancestries.</p>
-<p>At the moment, this is the only format RápidoPGS supports for pre-computed LD matrices, and we cannot foresee all possible formats, so if you want to use your own matrices with RápidoPGS-multi, please ensure to provide them in the described format.</p>
-<p><strong>A brief note on ancestries</strong>: By default, RápidoPGS expects European ancestry data, which is the most common in the GWAS field – and an issue to be tackled. However, as a beta, untested option, RápidoPGS can now accommodate other ancestries. To do so, you’ll need to provide either LD matrices or a reference panel from the non-European population, via the <code>LDmatrices</code> or <code>reference</code> arguments, respectively. You’ll also need to provide an LD block file via the <code>LDblocks</code> argument. This file should be analog to our EUR_ld.blocks files in <code>data/</code> and be in the same format. At the moment we haven’t tested RápidoPGS on different ancestries, but feel free to try and let us know if you find issues doing so.</p>
+<p>Alternatively, we can use pre-computed LD matrices (from a larger
+panel, for example). In our paper, we use pre-computed LD matrices from
+the UK Biobank panel, made publicly available by LDpred2 authors <a href="https://figshare.com/articles/dataset/European_LD_reference/13034123">here</a>.</p>
+<p>These matrices comprise ~1 million HapMap3 variants, and were
+computed on 362,320 UK Biobank individuals. We can download and set them
+up using the following code:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;ukbb&quot;</span>)  <span class="co"># Or whatever you like</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;https://ndownloader.figshare.com/articles/13034123/versions/3&quot;</span>, <span class="at">destfile=</span><span class="st">&quot;ukbb/LD_ukbb.zip&quot;</span>, <span class="at">mode=</span><span class="st">&quot;wb&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">unzip</span>(<span class="at">zipfile=</span><span class="st">&quot;ukbb/LD_ukbb.zip&quot;</span>, <span class="at">exdir=</span><span class="st">&quot;ukbb/&quot;</span>) </span></code></pre></div>
+<p><strong>Note:</strong> If you get some error or warning when
+unzipping from the R session (eg. “Zip file is corrupt” warning), try to
+unzip normally, using either a terminal or right-clicking on the file
+and extracting it.</p>
+<p>With this, your LD matrix directory should be ready. We prepared
+<code>rapidopgs_multi()</code> function to work out of the box with
+these LD matrices, which are (1) Separated by chromosomes, (2) class
+“dsCMatrix”, (3) contained in <code>.rds</code> files, and (4)
+accompanied by a manifest, <code>map.rds</code>, containing information
+on the variants in the LD matrices (HapMap3 variants in this case).</p>
+<p>Note that these matrices are computed using a European population, so
+they won’t be the best fit for generating a PGS for a non-European
+population. If that is your case, you can use the reference panel
+option, as it contains many populations from most ancestries.</p>
+<p>At the moment, this is the only format RápidoPGS supports for
+pre-computed LD matrices, and we cannot foresee all possible formats, so
+if you want to use your own matrices with RápidoPGS-multi, please ensure
+to provide them in the described format.</p>
+<p><strong>A brief note on ancestries</strong>: By default, RápidoPGS
+expects European ancestry data, which is the most common in the GWAS
+field – and an issue to be tackled. However, as a beta, untested option,
+RápidoPGS can now accommodate other ancestries. To do so, you’ll need to
+provide either LD matrices or a reference panel from the non-European
+population, via the <code>LDmatrices</code> or <code>reference</code>
+arguments, respectively. You’ll also need to provide an LD block file
+via the <code>LDblocks</code> argument. This file should be analog to
+our EUR_ld.blocks files in <code>data/</code> and be in the same format.
+At the moment we haven’t tested RápidoPGS on different ancestries, but
+feel free to try and let us know if you find issues doing so.</p>
 </div>
 <div id="loading-data" class="section level1">
 <h1>Loading data</h1>
-<p><a href="https://www.ebi.ac.uk/gwas/">GWAS catalog</a> is an outstanding GWAS summary statistics data source, as it not only puts together tons of public datasets, but it also uses a semi-automatic pipeline to apply quality control and liftover (a.k.a. harmonise) those datasets, thus helping overcome the problem of having GWAS sumstats in so many different formats and builds.</p>
-<p>In this vignette, we’ll use GWAS catalog to obtain an example dataset. For this vignette we’ll use a Breast cancer (BRCA) dataset from <a href="https://www.nature.com/articles/nature24284">Michailidou et al., 2017</a>, which is one that we used in our manuscript. This GWAS was performed on 119078 controls and 137045 cases of Breast cancer.</p>
-<p><strong>IMPORTANT NOTE</strong>: Input GWAS summary statistics and your reference panel (or LD matrices) <strong>must be in the same build</strong>. Both 1000 Genomes and UK Biobank LD matrices are in GRCh37/hg19 build, while harmonised GWAS catalog files come in GRCh38/hg38.</p>
-<p>You can use <code>gwascat.download()</code> to download files from GWAS catalog see the RápidoPGS single <a href="https://grealesm.github.io/RapidoPGS/articles/Computing_RapidoPGSsingle.html">vignette</a>. In this case, we downloaded the hg19 version of the file <a href="http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST004001-GCST005000/GCST004988/harmonised/29059683-GCST004988-EFO_0000305-build37.f.tsv.gz">here</a>, sampled 100,000 random SNPs (for educational purposes only, you don’t need to sample SNPs when building your PGS), and saved it as <code>michailidou19</code>, which we’ll now load.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ds <span class="ot">&lt;-</span> michailidou19</span></code></pre></div>
+<p><a href="https://www.ebi.ac.uk/gwas/">GWAS catalog</a> is an
+outstanding GWAS summary statistics data source, as it not only puts
+together tons of public datasets, but it also uses a semi-automatic
+pipeline to apply quality control and liftover (a.k.a. harmonise) those
+datasets, thus helping overcome the problem of having GWAS sumstats in
+so many different formats and builds.</p>
+<p>In this vignette, we’ll use GWAS catalog to obtain an example
+dataset. For this vignette we’ll use a Breast cancer (BRCA) dataset from
+<a href="https://www.nature.com/articles/nature24284">Michailidou et
+al., 2017</a>, which is one that we used in our manuscript. This GWAS
+was performed on 119078 controls and 137045 cases of Breast cancer.</p>
+<p><strong>IMPORTANT NOTE</strong>: Input GWAS summary statistics and
+your reference panel (or LD matrices) <strong>must be in the same
+build</strong>. Both 1000 Genomes and UK Biobank LD matrices are in
+GRCh37/hg19 build, while harmonised GWAS catalog files come in
+GRCh38/hg38.</p>
+<p>You can use <code>gwascat.download()</code> to download files from
+GWAS catalog see the RápidoPGS single <a href="https://grealesm.github.io/RapidoPGS/articles/Computing_RapidoPGSsingle.html">vignette</a>.
+In this case, we downloaded the hg19 version of the file <a href="http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST004001-GCST005000/GCST004988/harmonised/29059683-GCST004988-EFO_0000305-build37.f.tsv.gz">here</a>,
+sampled 100,000 random SNPs (for educational purposes only, you don’t
+need to sample SNPs when building your PGS), and saved it as
+<code>michailidou19</code>, which we’ll now load.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>ds <span class="ot">&lt;-</span> michailidou19</span></code></pre></div>
 </div>
 <div id="computing-a-pgs-using-rápidopgs-multi-and-ld-matrices" class="section level1">
 <h1>Computing a PGS using RápidoPGS-multi and LD matrices</h1>
-<p>Now we’re ready to compute our PGS using UK Biobank LD matrices, this is easily done as follows.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>model.LDmat <span class="ot">&lt;-</span> <span class="fu">rapidopgs_multi</span>(ds, <span class="at">LDmatrices =</span> <span class="st">&quot;ukbb&quot;</span>, <span class="at">N =</span> <span class="dv">256123</span>, <span class="at">build =</span> <span class="st">&quot;hg19&quot;</span>, <span class="at">trait=</span><span class="st">&quot;cc&quot;</span>)</span></code></pre></div>
-<p>Note that default <span class="math inline">\(\alpha_{block}\)</span> is <span class="math inline">\(10^-4\)</span> and <span class="math inline">\(\alpha_{SNP}\)</span> is 0.01, which is a fast setting, but sheds off many SNPs. Also, sample size (N) is now required by RápidoPGS for both case-control and quantitative datasets. For case-control datasets, <code>N = Ncases + Ncontrols</code>.</p>
+<p>Now we’re ready to compute our PGS using UK Biobank LD matrices, this
+is easily done as follows.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>model.LDmat <span class="ot">&lt;-</span> <span class="fu">rapidopgs_multi</span>(ds, <span class="at">LDmatrices =</span> <span class="st">&quot;ukbb&quot;</span>, <span class="at">N =</span> <span class="dv">256123</span>, <span class="at">build =</span> <span class="st">&quot;hg19&quot;</span>, <span class="at">trait=</span><span class="st">&quot;cc&quot;</span>)</span></code></pre></div>
+<p>Note that default <span class="math inline">\(\alpha_{block}\)</span>
+is <span class="math inline">\(10^-4\)</span> and <span class="math inline">\(\alpha_{SNP}\)</span> is 0.01, which is a fast
+setting, but sheds off many SNPs. Also, sample size (N) is now required
+by RápidoPGS for both case-control and quantitative datasets. For
+case-control datasets, <code>N = Ncases + Ncontrols</code>.</p>
 <pre><code>You selected hg19 build. Please note that your reference or LDmatrices must be in the same build as your dataset.
 Assigning LD blocks using pre-computed hg19 LD blocks.
 Done!
@@ -273,14 +549,24 @@ Working on chromosome 21.
 Working on chromosome 22.
   |======================================================================| 100%
 </code></pre>
-<p>After this <code>model.LDmat$weight</code> will contain the weights for each SNP. Bear in mind that depending on your <span class="math inline">\(\alpha\)</span> settings, your model will have much fewer SNPs than your input file.</p>
+<p>After this <code>model.LDmat$weight</code> will contain the weights
+for each SNP. Bear in mind that depending on your <span class="math inline">\(\alpha\)</span> settings, your model will have
+much fewer SNPs than your input file.</p>
 </div>
 <div id="computing-a-pgs-using-rápidopgs-multi-and-1000-genomes-phase-iii-panel" class="section level1">
-<h1>Computing a PGS using RápidoPGS-multi and 1000 Genomes Phase III panel</h1>
-<p>We can compute our PGS using 1000 Genomes Phase III panel as follows:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>model.refpanel <span class="ot">&lt;-</span> <span class="fu">rapidopgs_multi</span>(ds, <span class="at">reference =</span> <span class="st">&quot;ref-data&quot;</span>,  <span class="at">N =</span> <span class="dv">256123</span>, <span class="at">build =</span> <span class="st">&quot;hg19&quot;</span>, <span class="at">trait=</span><span class="st">&quot;cc&quot;</span>, <span class="at">ncores=</span><span class="dv">8</span>)</span></code></pre></div>
-<p>Here, instead of <code>LDmatrices</code>, we just need to set <code>reference</code> to point to the directory in which our panel lives.</p>
-<p>Note that default <span class="math inline">\(\alpha_{block}\)</span> is <span class="math inline">\(10^{-4}\)</span> and <span class="math inline">\(\alpha_{SNP}\)</span> is 0.01, which is a fast setting, but sheds off many SNPs. Also, default <code>ncores = 1</code>, but this approach benefits from parallelisation, so we used 8 CPUs in this example.</p>
+<h1>Computing a PGS using RápidoPGS-multi and 1000 Genomes Phase III
+panel</h1>
+<p>We can compute our PGS using 1000 Genomes Phase III panel as
+follows:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>model.refpanel <span class="ot">&lt;-</span> <span class="fu">rapidopgs_multi</span>(ds, <span class="at">reference =</span> <span class="st">&quot;ref-data&quot;</span>,  <span class="at">N =</span> <span class="dv">256123</span>, <span class="at">build =</span> <span class="st">&quot;hg19&quot;</span>, <span class="at">trait=</span><span class="st">&quot;cc&quot;</span>, <span class="at">ncores=</span><span class="dv">8</span>)</span></code></pre></div>
+<p>Here, instead of <code>LDmatrices</code>, we just need to set
+<code>reference</code> to point to the directory in which our panel
+lives.</p>
+<p>Note that default <span class="math inline">\(\alpha_{block}\)</span>
+is <span class="math inline">\(10^{-4}\)</span> and <span class="math inline">\(\alpha_{SNP}\)</span> is 0.01, which is a fast
+setting, but sheds off many SNPs. Also, default <code>ncores = 1</code>,
+but this approach benefits from parallelisation, so we used 8 CPUs in
+this example.</p>
 <pre><code>You selected hg19 build. Please note that your reference or LDmatrices must be in the same build as your dataset.
 Assigning LD blocks using pre-computed hg19 LD blocks.
 Done!
@@ -420,12 +706,15 @@ Matching and aligning SNPs in chr22 to the reference
 76 ambiguous SNPs have been removed.
 642 variants have been matched; 0 were flipped and 487 were reversed.
   |======================================================================| 100%</code></pre>
-<p>After this <code>model.refpanel$weight</code> will contain the weights for each SNP. Bear in mind that depending on your <span class="math inline">\(\alpha\)</span> settings, your model will have much fewer SNPs than your input file.</p>
+<p>After this <code>model.refpanel$weight</code> will contain the
+weights for each SNP. Bear in mind that depending on your <span class="math inline">\(\alpha\)</span> settings, your model will have
+much fewer SNPs than your input file.</p>
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
 <p>So those are examples of basic <em>RápidoPGS-multi</em> usage!</p>
-<p>Drop us a line if you encounter problems, and we’ll be happy to help.</p>
+<p>Drop us a line if you encounter problems, and we’ll be happy to
+help.</p>
 <p>Good luck!</p>
 <p>Guillermo</p>
 </div>
