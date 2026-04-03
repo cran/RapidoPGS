@@ -12,7 +12,7 @@
 
 <meta name="author" content="Guillermo Reales" />
 
-<meta name="date" content="2025-02-19" />
+<meta name="date" content="2026-04-02" />
 
 <title>Computing a PGS using RápidoPGS-single and GWAS catalog</title>
 
@@ -342,7 +342,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Computing a PGS using RápidoPGS-single and
 GWAS catalog</h1>
 <h4 class="author">Guillermo Reales</h4>
-<h4 class="date">2025-02-19</h4>
+<h4 class="date">2026-04-02</h4>
 
 
 
@@ -459,7 +459,7 @@ might write instructions explaining how to do it in the future.</p>
 <p>Lastly, we applied a number of QC steps in our paper, which we won’t
 apply here, but encourage you to try when using real data. The details
 of this procedure are described in the paper. You can also take a look
-at the code <a href="https://github.com/GRealesM/RapidoPGS_paper/blob/master/Preparing_datasets_qcfilt_clean_20210317.R">here</a>.</p>
+at the code <a href="https://raw.githubusercontent.com/GRealesM/RapidoPGS_paper/refs/heads/master/Preparing_datasets_qcfilt_clean_20210317.R">here</a>.</p>
 <p>Let’s now look at the file.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">summary</span>(ds)</span></code></pre></div>
 <pre><code>##     SNPID                CHR               BP                REF           
@@ -508,12 +508,13 @@ build</strong> as our summary statistics dataset. RápidoPGS currently
 supports <strong>hg19</strong> and <strong>hg38</strong> builds.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>full_PGS <span class="ot">&lt;-</span> <span class="fu">rapidopgs_single</span>(ds, <span class="at">trait =</span> <span class="st">&quot;cc&quot;</span>, <span class="at">build =</span> <span class="st">&quot;hg38&quot;</span>)</span></code></pre></div>
 <pre><code>## Assigning LD blocks...</code></pre>
+<pre><code>## Loading required namespace: GenomeInfoDb</code></pre>
 <pre><code>## Done!</code></pre>
 <pre><code>## Computing a RapidoPGS-single model for a case-control dataset...</code></pre>
 <p>Well, that was <em>rápido</em>! With increasingly big datasets, it
 will take a bit longer, of course.</p>
 <p>Let’s take a look.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">head</span>(full_PGS)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">head</span>(full_PGS)</span></code></pre></div>
 <pre><code>##         SNPID   CHR        BP    REF    ALT ALT_FREQ    BETA     SE      P
 ##        &lt;char&gt; &lt;num&gt;     &lt;int&gt; &lt;char&gt; &lt;char&gt;    &lt;num&gt;   &lt;num&gt;  &lt;num&gt;  &lt;num&gt;
 ## 1: rs76197520     2  49673981      C      T   0.0603  0.0149 0.0131 0.2540
@@ -546,11 +547,11 @@ the top SNPs with largest weights (in either way).</p>
 <p>For accuracy reasons, we recommend recomputing the PGS on just these
 SNPs after the threshold was applied, so <code>recalc = TRUE</code> by
 default.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>PGS_1e4 <span class="ot">&lt;-</span> <span class="fu">rapidopgs_single</span>(ds, <span class="at">trait =</span><span class="st">&quot;cc&quot;</span>, <span class="at">build =</span> <span class="st">&quot;hg38&quot;</span>, <span class="at">filt_threshold =</span> <span class="fl">1e-4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>PGS_1e4 <span class="ot">&lt;-</span> <span class="fu">rapidopgs_single</span>(ds, <span class="at">trait =</span><span class="st">&quot;cc&quot;</span>, <span class="at">build =</span> <span class="st">&quot;hg38&quot;</span>, <span class="at">filt_threshold =</span> <span class="fl">1e-4</span>)</span></code></pre></div>
 <pre><code>## Assigning LD blocks...</code></pre>
 <pre><code>## Done!</code></pre>
 <pre><code>## Computing a RapidoPGS-single model for a case-control dataset...</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">head</span>(PGS_1e4)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">head</span>(PGS_1e4)</span></code></pre></div>
 <pre><code>##          SNPID   CHR       BP    REF    ALT ALT_FREQ   BETA     SE       P
 ##         &lt;char&gt; &lt;num&gt;    &lt;int&gt; &lt;char&gt; &lt;char&gt;    &lt;num&gt;  &lt;num&gt;  &lt;num&gt;   &lt;num&gt;
 ## 1: rs143863360    15 75910714      G      T   0.0222 0.0611 0.0265 0.02123
@@ -559,11 +560,11 @@ default.</p>
 ## 1: 256123     1112 0.0001789831 1.093587e-05</code></pre>
 <p>You can omit recalculation by setting that argument to
 <code>FALSE</code></p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>PGS_1e4_norecalc <span class="ot">&lt;-</span> <span class="fu">rapidopgs_single</span>(ds, <span class="at">trait =</span><span class="st">&quot;cc&quot;</span>, <span class="at">build =</span> <span class="st">&quot;hg38&quot;</span>, <span class="at">filt_threshold =</span> <span class="fl">1e-4</span>, <span class="at">recalc =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>PGS_1e4_norecalc <span class="ot">&lt;-</span> <span class="fu">rapidopgs_single</span>(ds, <span class="at">trait =</span><span class="st">&quot;cc&quot;</span>, <span class="at">build =</span> <span class="st">&quot;hg38&quot;</span>, <span class="at">filt_threshold =</span> <span class="fl">1e-4</span>, <span class="at">recalc =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <pre><code>## Assigning LD blocks...</code></pre>
 <pre><code>## Done!</code></pre>
 <pre><code>## Computing a RapidoPGS-single model for a case-control dataset...</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="fu">head</span>(PGS_1e4_norecalc)</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">head</span>(PGS_1e4_norecalc)</span></code></pre></div>
 <pre><code>##          SNPID   CHR       BP    REF    ALT ALT_FREQ   BETA     SE       P
 ##         &lt;char&gt; &lt;num&gt;    &lt;int&gt; &lt;char&gt; &lt;char&gt;    &lt;num&gt;  &lt;num&gt;  &lt;num&gt;   &lt;num&gt;
 ## 1: rs143863360    15 75910714      G      T   0.0222 0.0611 0.0265 0.02123
@@ -574,11 +575,11 @@ default.</p>
 <code>filt_threshold</code> argument. If it’s larger than 1, RápidoPGS
 will understand that you want a top list, rather than a thresholded
 result.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>PGS_top10 <span class="ot">&lt;-</span> <span class="fu">rapidopgs_single</span>(ds, <span class="at">trait =</span><span class="st">&quot;cc&quot;</span>, <span class="at">build =</span> <span class="st">&quot;hg38&quot;</span>, <span class="at">filt_threshold =</span> <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>PGS_top10 <span class="ot">&lt;-</span> <span class="fu">rapidopgs_single</span>(ds, <span class="at">trait =</span><span class="st">&quot;cc&quot;</span>, <span class="at">build =</span> <span class="st">&quot;hg38&quot;</span>, <span class="at">filt_threshold =</span> <span class="dv">10</span>)</span></code></pre></div>
 <pre><code>## Assigning LD blocks...</code></pre>
 <pre><code>## Done!</code></pre>
 <pre><code>## Computing a RapidoPGS-single model for a case-control dataset...</code></pre>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="fu">head</span>(PGS_top10)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">head</span>(PGS_top10)</span></code></pre></div>
 <pre><code>##          SNPID   CHR       BP    REF    ALT ALT_FREQ    BETA     SE       P
 ##         &lt;char&gt; &lt;num&gt;    &lt;int&gt; &lt;char&gt; &lt;char&gt;    &lt;num&gt;   &lt;num&gt;  &lt;num&gt;   &lt;num&gt;
 ## 1: rs143863360    15 75910714      G      T   0.0222  0.0611 0.0265 0.02123
